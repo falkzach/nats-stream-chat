@@ -1,0 +1,34 @@
+services:
+  nats:
+    image: nats:latest
+    container_name: nats_server
+    ports:
+      - "4222:4222"  # NATS client port
+      - "8222:8222"  # Monitoring port
+    command: ["-js"]  # Enable JetStream
+
+  publisher:
+    image: natsio/nats-box:latest
+    container_name: nats_publisher
+    depends_on:
+      - nats
+    volumes:
+      - ./emojis.json:/root/emojis.json:ro
+      - ./random-emoji.sh:/root/random-emoji.sh:x
+    command: ["sh", "-c", "sleep 1 && EMOJI=$(/root/random-emoji.sh) && nats pub chat.emojis \"$EMOJI\" -s nats://nats:4222 --count=-1000 --sleep=1s"]
+
+  subscriber:
+    image: natsio/nats-box:latest
+    container_name: nats_subscriber
+    depends_on:
+      - nats
+    command: ["sh", "-c", "nats sub chat.emojis -s nats://nats:4222"]
+
+  hello-emoji:
+    image: natsio/nats-box:latest
+    container_name: nats_hello
+    depends_on:
+      - nats
+    command: ["sh", "-c", "nats pub chat.emojis \"🌍\" -s nats://nats:4222"]
+    
+  # docker run --rm -it --network=nats_default natsio/nats-box:latest nats sub ">" -s nats://nats:4222
