@@ -4,20 +4,25 @@
 
 - docker
 
+## Run
 
-## Start server
+`docker compose up`
+
+## Nats basics
+
+### Start server
 
 `nats server run`
 
 `nats context select nats_development`
 
-## Services
+### Services
 
 `nats reply hello.zac "Hi"`
 
 `nats req hello.zac "{}"`
 
-## Streams
+### Streams
 
 `nats sub hello.world`
 
@@ -33,7 +38,7 @@
 
 `nats pub hellow.world "hello, world" --count=-1 --sleep=1s`
 
-## Fan out
+### Fan out
 
 `nats sub hello.world`
 
@@ -41,7 +46,7 @@
 
 `nats pub hellow.world "hello, world" --count=-1 --sleep=1s`
 
-## Queue Group
+### Queue Group
 
 mult sub on subject in a group together, distributed, no load balancer
 
@@ -51,12 +56,11 @@ mult sub on subject in a group together, distributed, no load balancer
 
 `nats pub hellow.world "hello world" --count 10000`
 
-## Wiretap
+### Wiretap
 
 `nats sub >`
 
-
-## Wildcard
+### Wildcard
 
 `nats reply "hello.*" --command "echo 'Hello, {{1}}'" --sleep 1`
 
